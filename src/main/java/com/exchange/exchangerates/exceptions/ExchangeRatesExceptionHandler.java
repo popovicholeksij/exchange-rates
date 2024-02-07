@@ -21,7 +21,7 @@ public class ExchangeRatesExceptionHandler extends ResponseEntityExceptionHandle
                                                                  HttpHeaders headers,
                                                                  HttpStatusCode status,
                                                                  WebRequest request) {
-        return toResponseEntity(ex, status, request.toString(), ex.getMessage());
+        return toResponseEntity(ex, status, ex.getMessage());
     }
 
     @Override
@@ -29,27 +29,25 @@ public class ExchangeRatesExceptionHandler extends ResponseEntityExceptionHandle
                                                                   HttpHeaders headers,
                                                                   HttpStatusCode status,
                                                                   WebRequest request) {
-        return toResponseEntity(ex, status, request.toString(), ex.getMessage());
+        return toResponseEntity(ex, status, ex.getMessage());
     }
 
     @ExceptionHandler(IOException.class)
-    protected ResponseEntity handleIoException(IOException ex, WebRequest request) {
-        return toResponseEntity(ex, HttpStatusCode.valueOf(400), request.toString(), ex.getMessage());
+    protected ResponseEntity handleIoException(IOException ex) {
+        return toResponseEntity(ex, HttpStatusCode.valueOf(400), ex.getMessage());
     }
 
     @ExceptionHandler(ApiException.class)
-    protected ResponseEntity handleApiException(ApiException ex, WebRequest request) {
-        return toResponseEntity(ex, ex.getHttpStatusCode(), request.toString(), ex.getMessage());
+    protected ResponseEntity handleApiException(ApiException ex) {
+        return toResponseEntity(ex, ex.getHttpStatusCode(), ex.getMessage());
     }
 
-    private ResponseEntity toResponseEntity(Exception ex, HttpStatusCode status, String path, String exceptionMessage) {
+    private ResponseEntity toResponseEntity(Exception ex, HttpStatusCode status, String exceptionMessage) {
         log.error("ExchangeRatesExceptionHandler : " + exceptionMessage, ex);
         return ResponseEntity.status(status)
                 .body(ErrorBody.builder()
                         .status(status.value())
                         .error(exceptionMessage)
-                        .path(path)
-                        .exception(ex)
                         .build());
     }
 }
